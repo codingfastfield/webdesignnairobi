@@ -2,9 +2,9 @@
 export const site = {
   name: 'Web Design Nairobi',
   url: 'https://webdesignnairobi.co.ke',
-  whatsapp: '', // international format, no "+", e.g. '2547XXXXXXXX'
-  phone: '', // e.g. '+2547XXXXXXXX'
-  email: '', // e.g. 'hello@webdesignnairobi.co.ke'
+  whatsapp: '254700009945',
+  phone: '+254700009945',
+  email: 'info@gilvon.com',
   timeline: '2–4 weeks', // typical delivery for a business site, once content is ready
   // Set `from` (KES) to show "From KES X". Left null, the site shows "Fixed quote" instead.
   tiers: [
