@@ -31,9 +31,10 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
-    <header class="top">
+    <header class="top" data-top>
       <a class="logo" href="/"><span class="mark" aria-hidden="true"></span>webdesign<b>nairobi</b>.co.ke</a>
-      <nav aria-label="Main">
+      <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav" data-nav-toggle><span></span><span></span><span></span></button>
+      <nav id="nav" aria-label="Main">
         {hubs.slice(0, 5).map((h) => <a href={url(h)}>{clusters[h.cluster].label}</a>)}
         <a class="btn sm" href={quoteLink('website design Nairobi')}>Get a quote</a>
       </nav>
@@ -56,6 +57,25 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
         ))}
       </div>
     </footer>
+    <div class="fab" data-fab>
+      <div class="fab-menu" id="fab-menu">
+        {site.whatsapp && (
+          <a class="fab-opt wa" href={quoteLink('website design Nairobi')} rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8z" /></svg>WhatsApp us
+          </a>
+        )}
+        {site.phone && (
+          <a class="fab-opt" href={`tel:${site.phone}`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z" /></svg>Call us
+          </a>
+        )}
+      </div>
+      <button class="fab-btn" type="button" aria-label="Contact us" aria-expanded="false" aria-controls="fab-menu" data-fab-toggle>
+        <span class="ring"></span><span class="ring r2"></span>
+        <svg class="i-chat" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8z" /></svg>
+        <svg class="i-close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </div>
     <script>
       const init = () => {
         const els = document.querySelectorAll('.body section, .tier, .group, .bento li, .timeline li');
@@ -64,6 +84,24 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
         els.forEach((e) => { e.classList.add('reveal'); io.observe(e); });
       };
       document.addEventListener('astro:page-load', init);
+      // Menus use one delegated listener, so they keep working after page transitions replace the DOM.
+      const closeAll = (except?: Element | null) => {
+        document.querySelectorAll('[data-top].open, [data-fab].open').forEach((el) => {
+          if (el !== except) { el.classList.remove('open'); el.querySelector('[aria-expanded]')?.setAttribute('aria-expanded', 'false'); }
+        });
+      };
+      document.addEventListener('click', (e) => {
+        const t = e.target as Element;
+        const btn = t.closest('[data-nav-toggle], [data-fab-toggle]');
+        const host = btn?.closest('[data-top], [data-fab]') ?? null;
+        closeAll(host);
+        if (btn && host) {
+          const open = host.classList.toggle('open');
+          btn.setAttribute('aria-expanded', String(open));
+          if (btn.hasAttribute('data-nav-toggle')) btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        }
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAll(); });
     </script>
   </body>
 </html>
