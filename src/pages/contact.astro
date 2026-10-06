@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, quoteLink } from '../data/site';
+---
+<Base title="Contact | Web Design Nairobi" description="Get a fixed quote for your website in Nairobi or anywhere in Kenya." path="/contact/">
+  <section class="hero"><div class="wrap">
+    <h1>Get a fixed quote</h1>
+    <p class="lead">Tell us about your business and what the website must do. We reply with a written quote.</p>
+    <p class="cta">
+      {site.whatsapp && <a class="btn" href={quoteLink('website design Nairobi')}>WhatsApp us</a>}
+      {site.phone && <a class="btn ghost" href={`tel:${site.phone}`}>{site.phone}</a>}
+      {site.email && <a class="btn ghost" href={`mailto:${site.email}`}>{site.email}</a>}
+    </p>
+    {!site.whatsapp && !site.phone && !site.email && <p class="muted">Add your WhatsApp, phone or email in src/data/site.ts and they appear here.</p>}
+  </div></section>
+</Base>

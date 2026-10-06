@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, quoteLink } from '../data/site';
+import { clusters, pages, bySlug, url, related, anchor, cap, children, type Page } from '../data/pages';
+import { build } from '../data/content';
+interface Props { page: Page }
+const { page } = Astro.props;
+const c = build(page);
+const rel = related(page);
+const cl = clusters[page.cluster];
+const hub = bySlug[cl.hub];
+const pricing = bySlug['website-design-prices-nairobi'];
+const path = url(page);
+const crumbs = [
+  { name: 'Home', path: '/' },
+  ...(page.home ? [] : page.hub ? [] : [{ name: cap(hub.kw), path: url(hub) }]),
+  ...(page.home ? [] : [{ name: cap(page.kw), path }]),
+];
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': ['ProfessionalService', 'LocalBusiness'], '@id': `${site.url}/#org`, name: site.name, url: site.url,
+      areaServed: [{ '@type': 'City', name: 'Nairobi' }, { '@type': 'Country', name: 'Kenya' }],
+      address: { '@type': 'PostalAddress', addressLocality: 'Nairobi', addressCountry: 'KE' },
+      ...(site.phone ? { telephone: site.phone } : {}), ...(site.email ? { email: site.email } : {}) },
+    { '@type': 'Service', name: cap(page.kw), serviceType: 'Website design and development', provider: { '@id': `${site.url}/#org` }, areaServed: 'Nairobi, Kenya' },
+    { '@type': 'FAQPage', mainEntity: c.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
+    { '@type': 'BreadcrumbList', itemListElement: crumbs.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, item: new URL(x.path, site.url).href })) },
+  ],
+};
+const listCluster = page.home ? null : page.hub ? page.cluster : null;
+const homeClusters = page.home ? (Object.keys(clusters) as (keyof typeof clusters)[]) : [];
+---
+<Base title={c.title} description={c.description} path={path} jsonLd={jsonLd}>
+  <section class="hero">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        {crumbs.map((x, i) => i < crumbs.length - 1 ? <><a href={x.path}>{x.name}</a><span>/</span></> : <span aria-current="page">{x.name}</span>)}
+      </nav>
+      <div class="urlbar" aria-hidden="true"><i></i><i></i><i></i><span>webdesignnairobi.co.ke{path}</span></div>
+      <h1>{c.h1}</h1>
+      <p class="lead">{c.lead}</p>
+      <p class="cta">
+        <a class="btn" href={quoteLink(page.kw)}>Get a fixed quote</a>
+        <a class="btn ghost" href={url(pricing)}>See prices</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="wrap body">
+    {c.sections.map((s) => (
+      <section>
+        <h2>{s.h2}</h2>
+        <ul class="ticks">{s.items.map((i) => <li>{i}</li>)}</ul>
+      </section>
+    ))}
+
+    <section>
+      <h2>How we build it</h2>
+      <ol class="steps">{c.steps.map(([t, d]) => <li><b>{t}</b> {d}</li>)}</ol>
+    </section>
+
+    <section>
+      <h2>Packages</h2>
+      <div class="tiers">
+        {site.tiers.map((t) => (
+          <div class="tier">
+            <h3>{t.name}</h3>
+            <p class="price">{t.from ? `From KES ${t.from.toLocaleString('en-KE')}` : 'Fixed quote'}</p>
+            <p class="muted">{t.scope}. {t.who}.</p>
+            <ul>{t.includes.map((i) => <li>{i}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+      <p>
+        Budget is the first question most people ask, so start with <a href={url(pricing)}>{anchor(pricing, page)}</a>
+        {rel.next && <> or move on to <a href={url(rel.next)}>{anchor(rel.next, page)}</a></>}.
+        {rel.prev && <> Not sure yet? Go back to <a href={url(rel.prev)}>{anchor(rel.prev, page)}</a>.</>}
+      </p>
+    </section>
+
+    {(listCluster || page.home) && (
+      <section>
+        <h2>{page.home ? 'Everything we cover' : `More in ${cl.label.toLowerCase()}`}</h2>
+        {(page.home ? homeClusters : [page.cluster]).map((id) => (
+          <div class="group">
+            {page.home && <h3><a href={url(bySlug[clusters[id].hub])}>{clusters[id].label}</a></h3>}
+            <ul class="links">
+              {children(id).filter((x) => !x.home).map((x) => <li><a href={url(x)}>{anchor(x, page)}</a></li>)}
+            </ul>
+          </div>
+        ))}
+      </section>
+    )}
+
+    <section>
+      <h2>Frequently asked questions</h2>
+      {c.faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
+    </section>
+
+    {(rel.hub || rel.siblings.length > 0 || rel.similar.length > 0) && (
+      <section class="related">
+        <h2>Related pages</h2>
+        <ul class="links">
+          {rel.hub && <li><a href={url(rel.hub)}>{anchor(rel.hub, page)}</a> <span class="muted">(overview)</span></li>}
+          {[...rel.siblings, ...rel.similar].map((x) => <li><a href={url(x)}>{anchor(x, page)}</a></li>)}
+        </ul>
+      </section>
+    )}
+
+    {page.variants.length > 0 && (
+      <p class="muted">Also searched: {page.variants.join(', ')}.</p>
+    )}
+
+    <section class="final">
+      <h2>Ready for a quote?</h2>
+      <p>Tell us what you need. You get a fixed written quote with scope, price and timeline.</p>
+      <p class="cta"><a class="btn" href={quoteLink(page.kw)}>Get a fixed quote</a></p>
+    </section>
+  </div>
+</Base>

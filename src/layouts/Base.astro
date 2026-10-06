@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import { site, quoteLink } from '../data/site';
+import { clusters, bySlug, url } from '../data/pages';
+interface Props { title: string; description: string; path: string; jsonLd?: object }
+const { title, description, path, jsonLd } = Astro.props;
+const canonical = new URL(path, site.url).href;
+const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
+---
+<!doctype html>
+<html lang="en-KE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0d2b24" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_KE" />
+    <meta name="geo.region" content="KE-30" />
+    <meta name="geo.placename" content="Nairobi" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body>
+    <header class="top">
+      <a class="logo" href="/">webdesign<b>nairobi</b>.co.ke</a>
+      <nav aria-label="Main">
+        {hubs.slice(0, 5).map((h) => <a href={url(h)}>{clusters[h.cluster].label}</a>)}
+        <a class="btn sm" href={quoteLink('website design Nairobi')}>Get a quote</a>
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer>
+      <div class="wrap foot">
+        <div>
+          <p class="logo">webdesign<b>nairobi</b>.co.ke</p>
+          <p>Website design and development for businesses in Nairobi and across Kenya.</p>
+          {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
+          {site.phone && <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>}
+          <p><a href="/contact/">Contact</a></p>
+        </div>
+        {hubs.map((h) => (
+          <div>
+            <h2>{clusters[h.cluster].label}</h2>
+            <p><a href={url(h)}>{clusters[h.cluster].blurb}</a></p>
+          </div>
+        ))}
+      </div>
+    </footer>
+  </body>
+</html>
