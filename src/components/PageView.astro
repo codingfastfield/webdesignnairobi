@@ -1,7 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroArt from './HeroArt.astro';
 import { site, quoteLink } from '../data/site';
-import { clusters, pages, bySlug, url, related, anchor, cap, children, type Page } from '../data/pages';
+import { themes } from '../data/theme';
+import { clusters, bySlug, url, related, anchor, cap, children, type Page } from '../data/pages';
 import { build } from '../data/content';
 interface Props { page: Page }
 const { page } = Astro.props;
@@ -11,6 +13,7 @@ const cl = clusters[page.cluster];
 const hub = bySlug[cl.hub];
 const pricing = bySlug['website-design-prices-nairobi'];
 const path = url(page);
+const th = themes[page.cluster];
 const crumbs = [
   { name: 'Home', path: '/' },
   ...(page.home ? [] : page.hub ? [] : [{ name: cap(hub.kw), path: url(hub) }]),
@@ -28,94 +31,111 @@ const jsonLd = {
     { '@type': 'BreadcrumbList', itemListElement: crumbs.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, item: new URL(x.path, site.url).href })) },
   ],
 };
-const listCluster = page.home ? null : page.hub ? page.cluster : null;
+const words = c.h1.replace(/\?$/, '').split(' ');
+const last = words.pop();
+const q = c.h1.endsWith('?') ? '?' : '';
+const listCluster = !page.home && page.hub ? page.cluster : null;
 const homeClusters = page.home ? (Object.keys(clusters) as (keyof typeof clusters)[]) : [];
+const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', 'Hosting', 'Mobile-first', 'Support'];
 ---
 <Base title={c.title} description={c.description} path={path} jsonLd={jsonLd}>
-  <section class="hero">
-    <div class="wrap">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        {crumbs.map((x, i) => i < crumbs.length - 1 ? <><a href={x.path}>{x.name}</a><span>/</span></> : <span aria-current="page">{x.name}</span>)}
-      </nav>
-      <div class="urlbar" aria-hidden="true"><i></i><i></i><i></i><span>webdesignnairobi.co.ke{path}</span></div>
-      <h1>{c.h1}</h1>
-      <p class="lead">{c.lead}</p>
-      <p class="cta">
-        <a class="btn" href={quoteLink(page.kw)}>Get a fixed quote</a>
-        <a class="btn ghost" href={url(pricing)}>See prices</a>
-      </p>
-    </div>
-  </section>
-
-  <div class="wrap body">
-    {c.sections.map((s) => (
-      <section>
-        <h2>{s.h2}</h2>
-        <ul class="ticks">{s.items.map((i) => <li>{i}</li>)}</ul>
-      </section>
-    ))}
-
-    <section>
-      <h2>How we build it</h2>
-      <ol class="steps">{c.steps.map(([t, d]) => <li><b>{t}</b> {d}</li>)}</ol>
-    </section>
-
-    <section>
-      <h2>Packages</h2>
-      <div class="tiers">
-        {site.tiers.map((t) => (
-          <div class="tier">
-            <h3>{t.name}</h3>
-            <p class="price">{t.from ? `From KES ${t.from.toLocaleString('en-KE')}` : 'Fixed quote'}</p>
-            <p class="muted">{t.scope}. {t.who}.</p>
-            <ul>{t.includes.map((i) => <li>{i}</li>)}</ul>
-          </div>
-        ))}
+  <div class="theme" style={`--a:${th.a};--b:${th.b}`}>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-text">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            {crumbs.map((x, i) => i < crumbs.length - 1 ? <><a href={x.path}>{x.name}</a><span>/</span></> : <span aria-current="page">{x.name}</span>)}
+          </nav>
+          <h1>{words.join(' ')} <span class="grad">{last}{q}</span></h1>
+          <p class="lead">{c.lead}</p>
+          <p class="cta">
+            <a class="btn" href={quoteLink(page.kw)}>Get a fixed quote</a>
+            <a class="btn ghost" href={url(pricing)}>See prices</a>
+          </p>
+          <ul class="trust"><li>Fixed written quote</li><li>M-Pesa ready</li><li>You own everything</li></ul>
+        </div>
+        <div class="hero-art"><HeroArt ind={page.ind} /></div>
       </div>
-      <p>
-        Budget is the first question most people ask, so start with <a href={url(pricing)}>{anchor(pricing, page)}</a>
-        {rel.next && <> or move on to <a href={url(rel.next)}>{anchor(rel.next, page)}</a></>}.
-        {rel.prev && <> Not sure yet? Go back to <a href={url(rel.prev)}>{anchor(rel.prev, page)}</a>.</>}
-      </p>
     </section>
+    <div class="ticker" aria-hidden="true">
+      <div class="track">{[0, 1].map(() => ticker.map((t) => <span>{t}<i>✦</i></span>))}</div>
+    </div>
 
-    {(listCluster || page.home) && (
+    <div class="wrap body">
+      {c.sections.map((s, n) => (
+        <section>
+          <h2>{s.h2}</h2>
+          {n === 0 ? (
+            <ul class="bento">{s.items.map((i, k) => <li><b>{String(k + 1).padStart(2, '0')}</b>{i}</li>)}</ul>
+          ) : (
+            <ul class="ticks">{s.items.map((i) => <li>{i}</li>)}</ul>
+          )}
+        </section>
+      ))}
+
       <section>
-        <h2>{page.home ? 'Everything we cover' : `More in ${cl.label.toLowerCase()}`}</h2>
-        {(page.home ? homeClusters : [page.cluster]).map((id) => (
-          <div class="group">
-            {page.home && <h3><a href={url(bySlug[clusters[id].hub])}>{clusters[id].label}</a></h3>}
-            <ul class="links">
-              {children(id).filter((x) => !x.home).map((x) => <li><a href={url(x)}>{anchor(x, page)}</a></li>)}
-            </ul>
+        <h2>How we build it</h2>
+        <ol class="timeline">{c.steps.map(([t, d], k) => <li><b>{k + 1}</b><h3>{t}</h3><p>{d}</p></li>)}</ol>
+      </section>
+
+      <section>
+        <h2>Packages</h2>
+        <div class="tiers">
+          {site.tiers.map((t, k) => (
+            <div class={`tier ${k === 1 ? 'pop' : ''}`}>
+              {k === 1 && <span class="badge">Most chosen</span>}
+              <h3>{t.name}</h3>
+              <p class="price">{t.from ? `From KES ${t.from.toLocaleString('en-KE')}` : 'Fixed quote'}</p>
+              <p class="muted">{t.scope}. {t.who}.</p>
+              <ul>{t.includes.map((i) => <li>{i}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+        <p>
+          Budget is the first question most people ask, so start with <a href={url(pricing)}>{anchor(pricing, page)}</a>
+          {rel.next && <> or move on to <a href={url(rel.next)}>{anchor(rel.next, page)}</a></>}.
+          {rel.prev && <> Not sure yet? Go back to <a href={url(rel.prev)}>{anchor(rel.prev, page)}</a>.</>}
+        </p>
+      </section>
+
+      {(listCluster || page.home) && (
+        <section class="wide">
+          <h2>{page.home ? 'Everything we cover' : `More in ${cl.label.toLowerCase()}`}</h2>
+          <div class="cards">
+            {(page.home ? homeClusters : [page.cluster]).map((id) => (
+              <div class="group" style={`--a:${themes[id].a};--b:${themes[id].b}`}>
+                {page.home && <h3><a href={url(bySlug[clusters[id].hub])}>{clusters[id].label}</a></h3>}
+                <ul class="links">{children(id).map((x) => <li><a href={url(x)}>{anchor(x, page)}</a></li>)}</ul>
+              </div>
+            ))}
           </div>
-        ))}
+        </section>
+      )}
+
+      <section>
+        <h2>Frequently asked questions</h2>
+        {c.faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
       </section>
-    )}
 
-    <section>
-      <h2>Frequently asked questions</h2>
-      {c.faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
-    </section>
+      {(rel.hub || rel.siblings.length > 0 || rel.similar.length > 0) && (
+        <section class="wide related">
+          <h2>Related pages</h2>
+          <ul class="chips">
+            {rel.hub && <li><a href={url(rel.hub)}>{anchor(rel.hub, page)}</a></li>}
+            {[...rel.siblings, ...rel.similar].map((x) => <li><a href={url(x)}>{anchor(x, page)}</a></li>)}
+          </ul>
+          {page.variants.length > 0 && <p class="muted">Also searched: {page.variants.join(', ')}.</p>}
+        </section>
+      )}
 
-    {(rel.hub || rel.siblings.length > 0 || rel.similar.length > 0) && (
-      <section class="related">
-        <h2>Related pages</h2>
-        <ul class="links">
-          {rel.hub && <li><a href={url(rel.hub)}>{anchor(rel.hub, page)}</a> <span class="muted">(overview)</span></li>}
-          {[...rel.siblings, ...rel.similar].map((x) => <li><a href={url(x)}>{anchor(x, page)}</a></li>)}
-        </ul>
+      <section class="wide final">
+        <div>
+          <h2>Ready for a quote?</h2>
+          <p>Tell us what you need. You get a fixed written quote with scope, price and timeline.</p>
+          <p class="cta"><a class="btn light" href={quoteLink(page.kw)}>Get a fixed quote</a><a class="btn ghost-w" href={`tel:${site.phone}`}>Call {site.phone}</a></p>
+        </div>
+        <svg viewBox="0 0 120 120" aria-hidden="true" class="orb"><circle cx="60" cy="60" r="56" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 8" /><circle cx="60" cy="60" r="34" fill="#fff" fill-opacity=".18" /><circle cx="60" cy="60" r="14" fill="#fff" /></svg>
       </section>
-    )}
-
-    {page.variants.length > 0 && (
-      <p class="muted">Also searched: {page.variants.join(', ')}.</p>
-    )}
-
-    <section class="final">
-      <h2>Ready for a quote?</h2>
-      <p>Tell us what you need. You get a fixed written quote with scope, price and timeline.</p>
-      <p class="cta"><a class="btn" href={quoteLink(page.kw)}>Get a fixed quote</a></p>
-    </section>
+    </div>
   </div>
 </Base>
