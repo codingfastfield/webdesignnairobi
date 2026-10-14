@@ -23,7 +23,9 @@ const crumbs = [
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': ['ProfessionalService', 'LocalBusiness'], '@id': `${site.url}/#org`, name: site.name, url: site.url,
+    { '@type': ['ProfessionalService', 'LocalBusiness'], '@id': `${site.url}/#org`, name: site.name, alternateName: 'WebDesignNairobi', url: site.url,
+      logo: { '@type': 'ImageObject', url: `${site.url}/icon-512.png`, width: 512, height: 512 },
+      image: [`${site.url}/og-image.jpg`],
       areaServed: [{ '@type': 'City', name: 'Nairobi' }, { '@type': 'Country', name: 'Kenya' }],
       address: { '@type': 'PostalAddress', addressLocality: 'Nairobi', addressCountry: 'KE' },
       ...(site.phone ? { telephone: site.phone } : {}), ...(site.email ? { email: site.email } : {}) },

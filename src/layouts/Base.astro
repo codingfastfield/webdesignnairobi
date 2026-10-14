@@ -6,6 +6,7 @@ import { clusters, bySlug, url } from '../data/pages';
 interface Props { title: string; description: string; path: string; jsonLd?: object }
 const { title, description, path, jsonLd } = Astro.props;
 const canonical = new URL(path, site.url).href;
+const ogImage = new URL('/og-image.jpg', site.url).href;
 const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
 ---
 <!doctype html>
@@ -16,7 +17,12 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#0C0420" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#050D26" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
@@ -26,6 +32,15 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="en_KE" />
+    <meta property="og:site_name" content="WebDesignNairobi" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="WebDesignNairobi logo: websites that work" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="geo.region" content="KE-30" />
     <meta name="geo.placename" content="Nairobi" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
@@ -35,7 +50,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
       <i class="o1" data-fix="0.10"></i><i class="o2" data-fix="-0.07"></i><i class="o3" data-fix="0.16"></i><i class="o4" data-fix="-0.14"></i>
     </div>
     <header class="top" data-top>
-      <a class="logo" href="/"><span class="mark" aria-hidden="true"></span><span>webdesign<b>nairobi</b>.co.ke</span></a>
+      <a class="logo" href="/" aria-label="WebDesignNairobi, home"><img src="/logo-horizontal.png" width="1100" height="178" alt="WebDesignNairobi" decoding="async" /></a>
       <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav" data-nav-toggle><span></span><span></span><span></span></button>
       <nav id="nav" aria-label="Main">
         {hubs.slice(0, 5).map((h) => <a href={url(h)}>{clusters[h.cluster].label}</a>)}
@@ -46,7 +61,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <footer>
       <div class="wrap foot">
         <div>
-          <p class="logo"><span>webdesign<b>nairobi</b>.co.ke</span></p>
+          <a class="logo" href="/" aria-label="WebDesignNairobi, home"><img src="/logo-stacked.png" width="900" height="499" alt="WebDesignNairobi: websites that work" loading="lazy" decoding="async" /></a>
           <p>Website design and development for businesses in Nairobi and across Kenya.</p>
           {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
           {site.phone && <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>}
