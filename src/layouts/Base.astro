@@ -16,10 +16,10 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta name="theme-color" content="#fbfaff" />
+    <meta name="theme-color" content="#0C0420" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
     <ClientRouter />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -31,8 +31,11 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
+    <div class="aurora" aria-hidden="true" transition:persist="aurora">
+      <i class="o1" data-fix="0.10"></i><i class="o2" data-fix="-0.07"></i><i class="o3" data-fix="0.16"></i><i class="o4" data-fix="-0.14"></i>
+    </div>
     <header class="top" data-top>
-      <a class="logo" href="/"><span class="mark" aria-hidden="true"></span>webdesign<b>nairobi</b>.co.ke</a>
+      <a class="logo" href="/"><span class="mark" aria-hidden="true"></span><span>webdesign<b>nairobi</b>.co.ke</span></a>
       <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav" data-nav-toggle><span></span><span></span><span></span></button>
       <nav id="nav" aria-label="Main">
         {hubs.slice(0, 5).map((h) => <a href={url(h)}>{clusters[h.cluster].label}</a>)}
@@ -43,7 +46,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <footer>
       <div class="wrap foot">
         <div>
-          <p class="logo">webdesign<b>nairobi</b>.co.ke</p>
+          <p class="logo"><span>webdesign<b>nairobi</b>.co.ke</span></p>
           <p>Website design and development for businesses in Nairobi and across Kenya.</p>
           {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
           {site.phone && <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>}
@@ -77,13 +80,76 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
       </button>
     </div>
     <script>
-      const init = () => {
-        const els = document.querySelectorAll('.body section, .tier, .group, .bento li, .timeline li');
-        if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const root = document.documentElement;
+      const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- scroll reveal (cards stagger in) ---- */
+      const reveal = () => {
+        if (!('IntersectionObserver' in window) || still()) return;
         const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 });
-        els.forEach((e) => { e.classList.add('reveal'); io.observe(e); });
+        document.querySelectorAll<HTMLElement>('.tier, .group, .bento li, .timeline li, details, .final').forEach((el) => {
+          const sib = el.parentElement ? [...el.parentElement.children].indexOf(el) : 0;
+          el.style.setProperty('--rd', `${Math.min(sib, 5) * 0.07}s`);
+          el.classList.add('reveal');
+          io.observe(el);
+        });
       };
-      document.addEventListener('astro:page-load', init);
+
+      /* ---- parallax engine ----
+         [data-par]   in-page shapes: drift against scroll, relative to their parent's position
+         [data-fix]   fixed background blobs: drift with total scroll
+         [data-depth] hero illustration layers: follow the pointer for depth */
+      type Item = { el: HTMLElement; s: number; host: Element | null };
+      let par: Item[] = [], fix: Item[] = [], depth: { el: SVGElement; k: number }[] = [];
+      let queued = false, raf = 0, tx = 0, ty = 0, cx = 0, cy = 0;
+      const collect = () => {
+        par = [...document.querySelectorAll<HTMLElement>('[data-par]')].map((el) => ({ el, s: parseFloat(el.dataset.par || '0'), host: el.parentElement }));
+        fix = [...document.querySelectorAll<HTMLElement>('[data-fix]')].map((el) => ({ el, s: parseFloat(el.dataset.fix || '0'), host: null }));
+        depth = [...document.querySelectorAll<SVGElement>('[data-depth]')].map((el) => ({ el, k: parseFloat(el.getAttribute('data-depth') || '0') }));
+      };
+      const paint = () => {
+        queued = false;
+        const y = scrollY, vh = innerHeight, max = root.scrollHeight - vh;
+        root.style.setProperty('--p', (max > 0 ? Math.min(1, y / max) : 0).toFixed(4));
+        if (still()) return;
+        for (const { el, s, host } of par) {
+          const r = host!.getBoundingClientRect();
+          if (r.bottom < -300 || r.top > vh + 300) continue;
+          el.style.transform = `translate3d(0, ${(-(r.top + r.height / 2 - vh / 2) * s).toFixed(1)}px, 0)`;
+        }
+        for (const { el, s } of fix) el.style.transform = `translate3d(0, ${(y * s).toFixed(1)}px, 0)`;
+      };
+      const queue = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+      const glide = () => {
+        cx += (tx - cx) * 0.08; cy += (ty - cy) * 0.08;
+        for (const { el, k } of depth) el.style.transform = `translate(${(cx * k).toFixed(1)}px, ${(cy * k).toFixed(1)}px)`;
+        const art = document.querySelector<HTMLElement>('.hero-art');
+        art?.style.setProperty('--rx', `${(-cy * 5).toFixed(2)}deg`);
+        art?.style.setProperty('--ry', `${(cx * 7).toFixed(2)}deg`);
+        raf = Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002 ? requestAnimationFrame(glide) : 0;
+      };
+      addEventListener('scroll', queue, { passive: true });
+      addEventListener('resize', queue);
+      document.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+        const card = (e.target as Element).closest?.<HTMLElement>('.bento li, .tier, .group, details');
+        if (card) {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+          card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        }
+        const hero = document.querySelector('.hero');
+        if (!hero || still() || !depth.length) return;
+        const r = hero.getBoundingClientRect();
+        if (r.bottom < 0) return;
+        tx = Math.max(-1, Math.min(1, (e.clientX / innerWidth - 0.5) * 2));
+        ty = Math.max(-1, Math.min(1, ((e.clientY - r.top) / Math.max(r.height, 1) - 0.5) * 2));
+        if (!raf) raf = requestAnimationFrame(glide);
+      });
+      document.addEventListener('astro:page-load', () => {
+        reveal(); collect(); paint();
+        if (still()) document.querySelectorAll('svg').forEach((v) => v.pauseAnimations?.());
+      });
       // Menus use one delegated listener, so they keep working after page transitions replace the DOM.
       const closeAll = (except?: Element | null) => {
         document.querySelectorAll('[data-top].open, [data-fab].open').forEach((el) => {

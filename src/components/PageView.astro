@@ -5,6 +5,7 @@ import { site, quoteLink } from '../data/site';
 import { themes } from '../data/theme';
 import { clusters, bySlug, url, related, anchor, cap, children, type Page } from '../data/pages';
 import { build } from '../data/content';
+import { blobMorph } from '../data/blob';
 interface Props { page: Page }
 const { page } = Astro.props;
 const c = build(page);
@@ -31,9 +32,7 @@ const jsonLd = {
     { '@type': 'BreadcrumbList', itemListElement: crumbs.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, item: new URL(x.path, site.url).href })) },
   ],
 };
-const words = c.h1.replace(/\?$/, '').split(' ');
-const last = words.pop();
-const q = c.h1.endsWith('?') ? '?' : '';
+const orbMorph = blobMorph(60, 60, [[44, 50, 42, 52, 46, 40, 50, 44], [52, 42, 50, 44, 40, 52, 44, 50], [42, 48, 52, 42, 50, 44, 48, 52]]);
 const listCluster = !page.home && page.hub ? page.cluster : null;
 const homeClusters = page.home ? (Object.keys(clusters) as (keyof typeof clusters)[]) : [];
 const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', 'Hosting', 'Mobile-first', 'Support'];
@@ -41,12 +40,18 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
 <Base title={c.title} description={c.description} path={path} jsonLd={jsonLd}>
   <div class="theme" style={`--a:${th.a};--b:${th.b}`}>
     <section class="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <span class="shape s1" data-par="0.30"><i></i></span>
+        <span class="shape s2" data-par="-0.22"><i></i></span>
+        <span class="shape s3" data-par="0.14"><i></i></span>
+        <span class="shape s4" data-par="-0.38"><i></i></span>
+      </div>
       <div class="wrap hero-grid">
         <div class="hero-text">
           <nav class="crumbs" aria-label="Breadcrumb">
             {crumbs.map((x, i) => i < crumbs.length - 1 ? <><a href={x.path}>{x.name}</a><span>/</span></> : <span aria-current="page">{x.name}</span>)}
           </nav>
-          <h1>{words.join(' ')} <span class="grad">{last}{q}</span></h1>
+          <h1>{c.h1}</h1>
           <p class="lead">{c.lead}</p>
           <p class="cta">
             <a class="btn" href={quoteLink(page.kw)}>Get a fixed quote</a>
@@ -58,7 +63,7 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
       </div>
     </section>
     <div class="ticker" aria-hidden="true">
-      <div class="track">{[0, 1].map(() => ticker.map((t) => <span>{t}<i>✦</i></span>))}</div>
+      <div class="track">{[0, 1, 2, 3].map(() => ticker.map((t) => <span>{t}<i></i></span>))}</div>
     </div>
 
     <div class="wrap body">
@@ -66,7 +71,10 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
         <section>
           <h2>{s.h2}</h2>
           {n === 0 ? (
-            <ul class="bento">{s.items.map((i, k) => <li><b>{String(k + 1).padStart(2, '0')}</b>{i}</li>)}</ul>
+            <>
+              <span class="deco dc1" data-par="0.22" aria-hidden="true"><i></i></span>
+              <ul class="bento">{s.items.map((i) => <li><b aria-hidden="true"></b>{i}</li>)}</ul>
+            </>
           ) : (
             <ul class="ticks">{s.items.map((i) => <li>{i}</li>)}</ul>
           )}
@@ -74,6 +82,7 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
       ))}
 
       <section>
+        <span class="deco dc2" data-par="-0.16" aria-hidden="true"><i></i></span>
         <h2>How we build it</h2>
         <ol class="timeline">{c.steps.map(([t, d], k) => <li><b>{k + 1}</b><h3>{t}</h3><p>{d}</p></li>)}</ol>
       </section>
@@ -113,6 +122,7 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
       )}
 
       <section>
+        <span class="deco dc3" data-par="0.2" aria-hidden="true"><i></i></span>
         <h2>Frequently asked questions</h2>
         {c.faqs.map((f) => <details><summary>{f.q}</summary><p>{f.a}</p></details>)}
       </section>
@@ -134,7 +144,15 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
           <p>Tell us what you need. You get a fixed written quote with scope, price and timeline.</p>
           <p class="cta"><a class="btn light" href={quoteLink(page.kw)}>Get a fixed quote</a><a class="btn ghost-w" href={`tel:${site.phone}`}>Call {site.phone}</a></p>
         </div>
-        <svg viewBox="0 0 120 120" aria-hidden="true" class="orb"><circle cx="60" cy="60" r="56" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-dasharray="4 8" /><circle cx="60" cy="60" r="34" fill="#fff" fill-opacity=".18" /><circle cx="60" cy="60" r="14" fill="#fff" /></svg>
+        <span class="fb fb1" data-par="0.12" aria-hidden="true"></span>
+        <span class="fb fb2" data-par="-0.12" aria-hidden="true"></span>
+        <svg viewBox="0 0 120 120" aria-hidden="true" class="orb">
+          <path d={orbMorph.d} fill="#fff" fill-opacity=".22">
+            <animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keyTimes={orbMorph.keyTimes} keySplines={orbMorph.keySplines} values={orbMorph.values} />
+          </path>
+          <circle cx="60" cy="60" r="56" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-dasharray="4 8" class="spin" />
+          <circle cx="60" cy="60" r="14" fill="#fff" />
+        </svg>
       </section>
     </div>
   </div>
