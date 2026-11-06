@@ -1,0 +1,12 @@
+---
+// Image + copy band. `variant` picks the frame: "photo" = rounded cream card for cut-out photos,
+// "shop" = soft gold blob behind a floating 3D render. `reverse` puts the image on the left.
+interface Props { src: string; width: number; height: number; alt: string; variant?: 'photo' | 'shop'; reverse?: boolean }
+const { src, width, height, alt, variant = 'photo', reverse = false } = Astro.props;
+---
+<section class={`wide showcase ${reverse ? 'rev' : ''}`}>
+  <div class="show-copy"><slot /></div>
+  <div class={variant === 'shop' ? 'shop-stage' : 'photo-stage'}>
+    <img src={src} width={width} height={height} alt={alt} loading="lazy" decoding="async" />
+  </div>
+</section>

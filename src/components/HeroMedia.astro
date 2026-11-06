@@ -1,0 +1,20 @@
+---
+// Hero media: a photo/render first, then the animated 3D illustration layered over its lower corner.
+// Ecommerce pages lead with the shopping render; every other page leads with the designer photo.
+import HeroArt from './HeroArt.astro';
+interface Props { ind?: string }
+const { ind } = Astro.props;
+const shop = ind === 'ecommerce';
+---
+<div class="media">
+  {shop ? (
+    <div class="shop-stage">
+      <img src="/images/online-shop-mobile.webp" width="900" height="822" alt="Phone showing an online shop, with a shopping bag, bank card and gold coin" fetchpriority="high" decoding="async" />
+    </div>
+  ) : (
+    <div class="photo-stage">
+      <img src="/images/designer-at-desk.webp" width="1200" height="800" alt="Web designer at her desk with a gold and black website on the monitor and phone" fetchpriority="high" decoding="async" />
+    </div>
+  )}
+  <div class="media-art"><HeroArt ind={ind} /></div>
+</div>
