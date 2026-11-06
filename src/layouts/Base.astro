@@ -22,7 +22,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#050D26" />
+    <meta name="theme-color" content="#F6F9FF" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
@@ -50,7 +50,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
       <i class="o1" data-fix="0.10"></i><i class="o2" data-fix="-0.07"></i><i class="o3" data-fix="0.16"></i><i class="o4" data-fix="-0.14"></i>
     </div>
     <header class="top" data-top>
-      <a class="logo" href="/" aria-label="WebDesignNairobi, home"><img src="/logo-horizontal.png" width="1100" height="178" alt="WebDesignNairobi" decoding="async" /></a>
+      <a class="logo" href="/" aria-label="WebDesignNairobi, home"><img src="/logo-horizontal-light.png" width="1100" height="144" alt="WebDesignNairobi" decoding="async" /></a>
       <button class="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav" data-nav-toggle><span></span><span></span><span></span></button>
       <nav id="nav" aria-label="Main">
         {hubs.slice(0, 5).map((h) => <a href={url(h)}>{clusters[h.cluster].label}</a>)}
@@ -61,7 +61,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
     <footer>
       <div class="wrap foot">
         <div>
-          <a class="logo" href="/" aria-label="WebDesignNairobi, home"><img src="/logo-stacked.png" width="900" height="499" alt="WebDesignNairobi: websites that work" loading="lazy" decoding="async" /></a>
+          <a class="logo" href="/" aria-label="WebDesignNairobi, home"><img src="/logo-on-light.png" width="1200" height="666" alt="WebDesignNairobi: websites that work" loading="lazy" decoding="async" /></a>
           <p>Website design and development for businesses in Nairobi and across Kenya.</p>
           {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
           {site.phone && <p><a href={`tel:${site.phone}`}>{site.phone}</a></p>}
@@ -102,7 +102,7 @@ const hubs = Object.values(clusters).map((c) => bySlug[c.hub]);
       const reveal = () => {
         if (!('IntersectionObserver' in window) || still()) return;
         const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 });
-        document.querySelectorAll<HTMLElement>('.tier, .group, .bento li, .timeline li, details, .final').forEach((el) => {
+        document.querySelectorAll<HTMLElement>('.tier, .group, .bento li, .timeline li, .plist li, details, .final').forEach((el) => {
           const sib = el.parentElement ? [...el.parentElement.children].indexOf(el) : 0;
           el.style.setProperty('--rd', `${Math.min(sib, 5) * 0.07}s`);
           el.classList.add('reveal');
