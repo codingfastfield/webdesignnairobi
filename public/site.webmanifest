@@ -4,8 +4,8 @@
   "description": "Website design and development for businesses in Nairobi and across Kenya.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F6F9FF",
-  "theme_color": "#F6F9FF",
+  "background_color": "#F7F6F2",
+  "theme_color": "#F7F6F2",
   "icons": [
     {
       "src": "/icon-192.png",

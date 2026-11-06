@@ -87,7 +87,7 @@ export function build(p: Page) {
   ] });
 
   const faqs = [
-    { q: 'How much does a website cost in Nairobi?', a: 'Landing pages start from KES 9,999, a 5-page Starter site from KES 24,999, a Business site from KES 49,999 and an online shop from KES 89,999. Custom systems go up to about KES 120,000. The final price depends on pages, content and features, and after a short brief we give a fixed written quote so there are no surprises.' },
+    { q: 'How much does a website cost in Nairobi?', a: 'Landing pages start from KES 9,999, a 5-page Starter site from KES 24,999, a Business site from KES 49,999 and an online shop from KES 64,999. Custom systems go up to about KES 79,999. The final price depends on pages, content and features, and after a short brief we give a fixed written quote so there are no surprises.' },
     { q: 'How long does it take to build a website?', a: `A typical business website takes ${site.timeline} once your content is ready. Online shops and custom systems take longer, and we confirm the timeline in your quote.` },
     { q: 'Will my website show up on Google?', a: 'We build the technical SEO foundations: fast pages, clean structure, titles, schema and a sitemap. No honest agency can guarantee a ranking, but a well-built site targeting the right searches gives you the best chance.' },
     { q: 'Can I update the website myself?', a: 'Yes. We set up an editor for text, images and, where relevant, products or listings, and show you how to use it.' },
