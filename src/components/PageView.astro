@@ -37,6 +37,7 @@ const jsonLd = {
 const orbMorph = blobMorph(60, 60, [[44, 50, 42, 52, 46, 40, 50, 44], [52, 42, 50, 44, 40, 52, 44, 50], [42, 48, 52, 42, 50, 44, 48, 52]]);
 const listCluster = !page.home && page.hub ? page.cluster : null;
 const homeClusters = page.home ? (Object.keys(clusters) as (keyof typeof clusters)[]) : [];
+const shopFrom = site.tiers.find((t) => t.name === 'Ecommerce')?.from ?? 0;
 const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', 'Hosting', 'Mobile-first', 'Support'];
 ---
 <Base title={c.title} description={c.description} path={path} jsonLd={jsonLd}>
@@ -61,7 +62,19 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
           </p>
           <ul class="trust"><li>Fixed written quote</li><li>M-Pesa ready</li><li>You own everything</li></ul>
         </div>
-        <div class="hero-art"><HeroArt ind={page.ind} /></div>
+        <div class="hero-art">
+          {page.home ? (
+            <div class="photo-stage">
+              <img src="/images/designer-at-desk.webp" width="1200" height="800" alt="Web designer at her desk with a gold and black website on the monitor and phone" fetchpriority="high" decoding="async" />
+            </div>
+          ) : page.ind === 'ecommerce' ? (
+            <div class="shop-stage">
+              <img src="/images/online-shop-mobile.webp" width="900" height="822" alt="Phone showing an online shop, with a shopping bag, bank card and gold coin" fetchpriority="high" decoding="async" />
+            </div>
+          ) : (
+            <HeroArt ind={page.ind} />
+          )}
+        </div>
       </div>
     </section>
     <div class="ticker" aria-hidden="true">
@@ -88,6 +101,19 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
         <h2>How we build it</h2>
         <ol class="timeline">{c.steps.map(([t, d], k) => <li><b>{k + 1}</b><h3>{t}</h3><p>{d}</p></li>)}</ol>
       </section>
+
+      {page.home && (
+        <section class="wide showcase">
+          <div class="shop-copy">
+            <h2>Online shops that take M-Pesa and cards</h2>
+            <p>Product catalogue, cart and checkout built for phones, with order emails and delivery options. Shops start from {kes(shopFrom)}.</p>
+            <p class="cta"><a class="btn" href={url(bySlug['ecommerce-website-design-nairobi'])}>See ecommerce websites</a></p>
+          </div>
+          <div class="shop-stage">
+            <img src="/images/online-shop-mobile.webp" width="900" height="822" alt="Phone showing an online shop, with a shopping bag, bank card and gold coin" loading="lazy" decoding="async" />
+          </div>
+        </section>
+      )}
 
       <section>
         <h2>Packages</h2>
