@@ -1,20 +1,22 @@
 ---
 // Hero media: a photo/render first, then the animated 3D illustration layered over its lower corner.
-// Ecommerce pages lead with the shopping render; every other page leads with the designer photo.
+//   ecommerce pages        -> shopping render
+//   restaurant pages       -> business owner with tablet
+//   "near me & Kenya" pages-> SEO laptop render
+//   everything else        -> designer at her desk
 import HeroArt from './HeroArt.astro';
-interface Props { ind?: string }
-const { ind } = Astro.props;
-const shop = ind === 'ecommerce';
+interface Props { ind?: string; cluster?: string }
+const { ind, cluster } = Astro.props;
+const m =
+  ind === 'ecommerce' ? { kind: 'shop', src: '/images/online-shop-mobile.webp', w: 900, h: 822, alt: 'Phone showing an online shop, with a shopping bag, bank card and gold coin' }
+  : ind === 'restaurant' ? { kind: 'photo portrait', src: '/images/business-owner-tablet.webp', w: 900, h: 945, alt: 'Smiling cafe owner in a black apron showing her new website on a tablet' }
+  : cluster === 'local' ? { kind: 'shop', src: '/images/seo-laptop.webp', w: 900, h: 634, alt: 'Laptop showing a top Google search result, with a magnifying glass, growth chart and trophy' }
+  : { kind: 'photo', src: '/images/designer-at-desk.webp', w: 1200, h: 800, alt: 'Web designer at her desk with a gold and black website on the monitor and phone' };
+const stage = m.kind.startsWith('photo') ? `photo-stage ${m.kind.includes('portrait') ? 'portrait' : ''}` : 'shop-stage';
 ---
 <div class="media">
-  {shop ? (
-    <div class="shop-stage">
-      <img src="/images/online-shop-mobile.webp" width="900" height="822" alt="Phone showing an online shop, with a shopping bag, bank card and gold coin" fetchpriority="high" decoding="async" />
-    </div>
-  ) : (
-    <div class="photo-stage">
-      <img src="/images/designer-at-desk.webp" width="1200" height="800" alt="Web designer at her desk with a gold and black website on the monitor and phone" fetchpriority="high" decoding="async" />
-    </div>
-  )}
+  <div class={stage}>
+    <img src={m.src} width={m.w} height={m.h} alt={m.alt} fetchpriority="high" decoding="async" />
+  </div>
   <div class="media-art"><HeroArt ind={ind} /></div>
 </div>

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import HeroMedia from './HeroMedia.astro';
+import Showcase from './Showcase.astro';
 import { site, quoteLink, kes } from '../data/site';
 import { themes } from '../data/theme';
 import { clusters, bySlug, url, related, anchor, cap, children, type Page } from '../data/pages';
@@ -62,7 +63,7 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
           </p>
           <ul class="trust"><li>Fixed written quote</li><li>M-Pesa ready</li><li>You own everything</li></ul>
         </div>
-        <div class="hero-art"><HeroMedia ind={page.ind} /></div>
+        <div class="hero-art"><HeroMedia ind={page.ind} cluster={page.cluster} /></div>
       </div>
     </section>
     <div class="ticker" aria-hidden="true">
@@ -91,16 +92,11 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
       </section>
 
       {page.home && (
-        <section class="wide showcase">
-          <div class="shop-copy">
-            <h2>Online shops that take M-Pesa and cards</h2>
-            <p>Product catalogue, cart and checkout built for phones, with order emails and delivery options. Shops start from {kes(shopFrom)}.</p>
-            <p class="cta"><a class="btn" href={url(bySlug['ecommerce-website-design-nairobi'])}>See ecommerce websites</a></p>
-          </div>
-          <div class="shop-stage">
-            <img src="/images/online-shop-mobile.webp" width="900" height="822" alt="Phone showing an online shop, with a shopping bag, bank card and gold coin" loading="lazy" decoding="async" />
-          </div>
-        </section>
+        <Showcase variant="shop" src="/images/online-shop-mobile.webp" width={900} height={822} alt="Phone showing an online shop, with a shopping bag, bank card and gold coin">
+          <h2>Online shops that take M-Pesa and cards</h2>
+          <p>Product catalogue, cart and checkout built for phones, with order emails and delivery options. Shops start from {kes(shopFrom)}.</p>
+          <p class="cta"><a class="btn" href={url(bySlug['ecommerce-website-design-nairobi'])}>See ecommerce websites</a></p>
+        </Showcase>
       )}
 
       <section>
@@ -136,6 +132,14 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
         <p class="muted">Prices are starting points in Kenya shillings. After a short brief you get a fixed written quote with the exact scope, price and timeline.</p>
       </section>
 
+      {page.home && (
+        <Showcase variant="shop" reverse src="/images/seo-laptop.webp" width={900} height={634} alt="Laptop showing a top Google search result, with a magnifying glass, growth chart and trophy">
+          <h2>Found on Google, not just admired</h2>
+          <p>Every page is built around the searches your customers actually make, with fast loading, a clean structure and Nairobi search in mind, so the right people can find you.</p>
+          <p class="cta"><a class="btn" href={url(bySlug['website-design-services-nairobi'])}>See our services</a></p>
+        </Showcase>
+      )}
+
       {(listCluster || page.home) && (
         <section class="wide">
           <h2>{page.home ? 'Everything we cover' : `More in ${cl.label.toLowerCase()}`}</h2>
@@ -148,6 +152,14 @@ const ticker = ['Website design', 'Development', 'SEO', 'Ecommerce', 'M-Pesa', '
             ))}
           </div>
         </section>
+      )}
+
+      {page.home && (
+        <Showcase variant="photo" portrait src="/images/business-owner-tablet.webp" width={900} height={945} alt="Smiling cafe owner in a black apron showing her new website on a tablet">
+          <h2>Built for Nairobi businesses like yours</h2>
+          <p>Cafes, restaurants, shops, clinics, schools and more. We build the site around how your customers decide, whether that is a menu, a booking or a quick call.</p>
+          <p class="cta"><a class="btn" href={url(bySlug['business-website-design-nairobi'])}>Browse by industry</a></p>
+        </Showcase>
       )}
 
       <section>
